@@ -112,7 +112,7 @@ defineProps({
                         <img class="w-24" src="/img/tailwind.png">
                     </div>
                     <div class="px-6 py-4">
-                        <div class="font-bold text-xl mb-2">Laravel</div>
+                        <div class="font-bold text-xl mb-2">Tailwind</div>
                         <p class="text-gray-400 text-base">
                             Tailwind CSS é uma biblioteca CSS utilitária para criação rápida de interfaces modernas, com
                             classes pré-definidas que permitem personalização flexível.
