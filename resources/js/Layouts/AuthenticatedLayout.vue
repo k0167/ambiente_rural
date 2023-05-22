@@ -41,6 +41,9 @@ const showingNavigationDropdown = ref(false);
                                 <NavLink :href="route('municipio')" :active="route().current('municipio')">
                                     Municipio
                                 </NavLink>
+                                <NavLink :href="route('proprietario')" :active="route().current('proprietario')">
+                                    Proprietario
+                                </NavLink>
                             </div>
                         </div>
 
@@ -132,6 +135,9 @@ const showingNavigationDropdown = ref(false);
                         </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('municipio')" :active="route().current('municipio')">
                             Municipio
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('proprietario')" :active="route().current('proprietario')">
+                            Proprietario
                         </ResponsiveNavLink>
                     </div>
 
