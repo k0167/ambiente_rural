@@ -50,6 +50,10 @@ Route::post('/proprietario', [ProprietarioController::class, 'store'])->name('pr
 Route::get('/proprietarios', [ProprietarioController::class, 'getProprietarios'])->name('proprietarios.get');
 Route::post('/proprietario/{id}', [ProprietarioController::class, 'destroy'])->name('proprietario.destroy');
 
+Route::get('/proprietarios/PJ/{id}', [ProprietarioController::class, 'getProprietariosPJ'])->name('proprietariosPJ.get');
+Route::post('/proprietario/PJ', [ProprietarioController::class, 'storePJ'])->name('proprietarioPJ.store');
+Route::post('/proprietario/PJ', [ProprietarioController::class, 'destroyPJ'])->name('proprietarioPJ.destroy');
+
 
 
 

@@ -27,7 +27,7 @@ export default {
                 fone1: '',
                 fone2: '',
                 fone3: '',
-                tipo: '',
+                tipo: 'PF',
                 pessoaF: {
                     cpf_prop: '',
                     nome_pf: '',
@@ -42,18 +42,21 @@ export default {
                 }
             },
             editing: false,
+            newDono: false,
+            donopj: '',
+            donos: [],
             message: '',
             isOpen: false,
             itens: [],
             linha: true,
         }
     },
-    mounted() {
-        this.getItens()
+    async mounted() {
+        await this.getItens();
     },
     methods: {
-        getItens() {
-            axios.get(route('proprietarios.get'))
+        async getItens() {
+            await axios.get(route('proprietarios.get'))
                 .then(response => {
                     this.itens = response.data;
                 })
@@ -114,6 +117,18 @@ export default {
             this.form.fone3 = item.FONE3;
             this.form.tipo = item.TIPO;
 
+            if (item.TIPO == 'PF') {
+                this.form.pessoaF.cpf_prop = item.pessoa_f.CPF_PROP;
+                this.form.pessoaF.nome_pf = item.pessoa_f.NOME_PF;
+                this.form.pessoaF.dt_nasc_pf = item.pessoa_f.DT_NASC_PF;
+                this.form.pessoaF.rg_pf = item.pessoa_f.RG_PF;
+                this.form.pessoaF.cod_prop_conjuge = item.pessoa_f.COD_PROP_CONJUGE;
+            } else {
+                this.form.pessoaJ.cnpj = item.pessoa_j.CNPJ;
+                this.form.pessoaJ.dt_cria_pj = item.pessoa_j.DT_CRIA_PJ;
+                this.form.pessoaJ.razao_social_pj = item.pessoa_j.RAZAO_SOCIAL_PJ;
+            }
+            this.getDono()
             this.editing = true;
             this.openModal();
         },
@@ -198,14 +213,68 @@ export default {
                 this.linha = true
                 return 'bg-red-50'
             }
+        }, filteredProprietarios() {
+            if (this.itens) {
+                //return only itens that have pessoa_f array
+                return this.itens.filter(item => item.pessoa_f)
+            }
+
+        },
+        getDono() {
+            axios.get(route('proprietariosPJ.get',this.form.cod_proprietario))
+                .then(response => {
+                    this.donos = response.data;
+                })
+                .catch(error => {
+                    this.message = error.response.data.message;
+                });
+
+        },
+        addDono() {
+            if (!this.newDono) {
+                this.newDono = true;
+            } else {
+                if (this.donopj == '') {
+                    return;
+                }
+                axios.get(route('proprietarioPJ.store'), {
+                    cod_prop_pj: this.form.cod_proprietario,
+                    cod_prop_pf: this.donopj
+                })
+                    .then(response => {
+                        this.message = response.data.message;
+                        this.getDono();
+                        this.donopj = '';
+
+                    })
+                    .catch(error => {
+                        this.message = error.response.data.message;
+                        this.closeModal();
+                    });
+
+                this.newDono = false;
+            }
+
+        }, remDono(item) {
+            axios.get(route('proprietarioPJ.store'), {
+                cod_prop_pj: item.COD_PROP_PJ,
+                cod_prop_pf: this.COD_PROP_PF
+            })
+                .then(response => {
+                    this.message = response.data.message;
+                    this.getDono();
+                    this.donopj = '';
+
+                })
+                .catch(error => {
+                    this.message = error.response.data.message;
+                    this.closeModal();
+                });
         }
-    },
-    computed: {
-        filteredProprietarios() {
-            return this.proprietarios.filter(proprietario => proprietario.TIPO == 'PF');
-        }
+
     }
 }
+
 
 </script>
 
@@ -262,7 +331,8 @@ export default {
                                                 </div>
                                                 <div>
                                                     <InputLabel for="nome" value="Tipo" />
-                                                    <select class="mt-1 block w-full" name="nome" v-model="form.tipo">
+                                                    <select :disabled="editing" class="mt-1 block w-full" name="nome"
+                                                        v-model="form.tipo">
                                                         <option value="PF">
                                                             Pessoa Fisica
                                                         </option>
@@ -290,23 +360,22 @@ export default {
                                                     <InputLabel for="nome" value="Data Nascimento" />
 
                                                     <TextInput id="nome" type="date" class="mt-1 block w-full"
-                                                        v-model="form.dt_nasc_pf" autocomplete="off" />
+                                                        v-model="form.pessoaF.dt_nasc_pf" autocomplete="off" />
                                                 </div>
                                                 <div>
                                                     <InputLabel for="nome" value="RG" />
 
                                                     <TextInput id="nome" type="text" class="mt-1 block w-full"
-                                                        v-model="form.rg_pf" autocomplete="off" />
+                                                        v-model="form.pessoaF.rg_pf" autocomplete="off" />
                                                 </div>
-                                                <div>
+                                                <div v-if="filteredProprietarios()">
                                                     <InputLabel for="nome" value="Conjuge" />
 
-                                                    <InputLabel for="nome" value="Tipo" />
                                                     <select class="mt-1 block w-full" name="nome"
                                                         v-model="form.pessoaF.cod_prop_conjuge">
-                                                        <option v-for="item in filteredProprietarios"
-                                                            :key="item.COD_PROPRIETARIO" :value="item.PESSOA_F.COD_PROP_PF">
-                                                            {{ item.PESSOA_F.NOME_PF }}
+                                                        <option v-for="item in filteredProprietarios()"
+                                                            :key="item.COD_PROPRIETARIO" :value="item.pessoa_f.COD_PROP_PF">
+                                                            {{ item.pessoa_f.NOME_PF }}
                                                         </option>
 
                                                     </select>
@@ -328,8 +397,71 @@ export default {
                                                 <div>
                                                     <InputLabel for="nome" value="Data Criação" />
 
-                                                    <TextInput id="nome" type="text" class="mt-1 block w-full"
-                                                        v-model="form.dt_cria_pj" autocomplete="off" />
+                                                    <TextInput id="nome" type="date" class="mt-1 block w-full"
+                                                        v-model="form.pessoaJ.dt_cria_pj" autocomplete="off" />
+                                                </div>
+
+                                                <div class="pt-4">
+                                                    <div class="flex flex-wrap">
+                                                        <div @click="addDono()"
+                                                            class="h-10 w-10 flex justify-center items-center bg-red-800  border border-gray-200 rounded-lg shadow cursor-pointer">
+                                                            <div v-if="!newDono" class="h-6 w-6 text-white">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                                    viewBox="0 0 24 24" strokeWidth={1.5}
+                                                                    stroke="currentColor" className="w-4 h-4">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round"
+                                                                        d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                </svg>
+                                                            </div>
+                                                            <div v-if="newDono" class="p-1 h-6 w-6 text-white">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                                    viewBox="0 0 24 24" stroke-width="1.5"
+                                                                    stroke="currentColor" class="w-4 h-4">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                                        d="M4.5 12.75l6 6 9-13.5" />
+                                                                </svg>
+                                                            </div>
+
+                                                        </div>
+                                                        <select v-if="newDono" class="ml-2 block w-72 h-10" name="nome"
+                                                            v-model="donopj">
+                                                            <option v-for="item in filteredProprietarios()"
+                                                                :key="item.COD_PROPRIETARIO"
+                                                                :value="item.pessoa_f.COD_PROP_PF">
+                                                                {{ item.pessoa_f.NOME_PF }}
+                                                            </option>
+
+                                                        </select>
+                                                    </div>
+                                                    <InputLabel for="nome" value="Donos Empresa" />
+                                                    <div class="h-36 overflow-y-scroll overflow-x-hidden">
+                                                        <table class=" border shadow ">
+                                                            <thead>
+                                                                <tr class="bg-white text-red-800 text-md text-center">
+                                                                    <th class="w-64 bg-gray-100 p-2 m-2">Nome PF</th>
+                                                                    <th class="w-24 bg-gray-100 p-2 m-2">Ações</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr v-for="(item,key) in donos" :key="key" :class="stripped()" class="text-center text-md">
+                                                                    <td>{{item.COD_PROP_PF}}</td>
+                                                                    <td class="justify-center flex flex-nowrap">
+                                                                        <svg @click="destroy(item)"
+                                                                            xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                                            viewBox="0 0 24 24" stroke-width="1.5"
+                                                                            stroke="currentColor"
+                                                                            class="cursor-pointer text-red-800 w-4 h-4">
+                                                                            <path stroke-linecap="round"
+                                                                                stroke-linejoin="round"
+                                                                                d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                                                        </svg>
+                                                                    </td>
+                                                                </tr>
+
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+
                                                 </div>
                                             </div>
                                         </div>

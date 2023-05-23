@@ -18,4 +18,9 @@ class PessoaF extends Model
         'COD_PROP_CONJUGE',
     ];
     public $timestamps = false;
+
+    public function proprietario()
+    {
+        return $this->belongsTo(Proprietario::class, 'COD_PROPRIETARIO', 'COD_PROP_PF');
+    }
 }

@@ -55,7 +55,8 @@ CREATE TABLE IF NOT EXISTS public."PROPRIETARIO"
     "NOME_PROPRIETARIO" character varying(100) COLLATE pg_catalog."default" NOT NULL,
     "FONE1" character varying(11) COLLATE pg_catalog."default" NOT NULL,
     "FONE2" character varying(11) COLLATE pg_catalog."default",
-    "FONE3" character varying(11) COLLATE pg_catalog."default"
+    "FONE3" character varying(11) COLLATE pg_catalog."default",
+	"TIPO" character varying(2) COLLATE pg_catalog."default"
 );
 
 -- Table: public.PESSOA_F
@@ -65,11 +66,11 @@ CREATE TABLE IF NOT EXISTS public."PROPRIETARIO"
 CREATE TABLE IF NOT EXISTS public."PESSOA_F"
 (
     "COD_PROP_PF" integer NOT NULL,
-    "CPF_PROP" integer NOT NULL,
+    "CPF_PROP" bigint NOT NULL,
     "NOME_PF" character varying(100) COLLATE pg_catalog."default" NOT NULL,
     "DT_NASC_PF" date NOT NULL,
     "RG_PF" bigint NOT NULL,
-    "COD_PROP_CONJUGE" integer NOT NULL,
+    "COD_PROP_CONJUGE" integer,
     CONSTRAINT "PESSOA_F_pkey" PRIMARY KEY ("COD_PROP_PF"),
     CONSTRAINT "PESSOA_F_UNI" UNIQUE ("CPF_PROP"),
     CONSTRAINT "PESSOA_F_FK" FOREIGN KEY ("COD_PROP_PF")
@@ -86,7 +87,7 @@ CREATE TABLE IF NOT EXISTS public."PESSOA_F"
 CREATE TABLE IF NOT EXISTS public."PESSOA_J"
 (
     "COD_PROP_PJ" integer NOT NULL,
-    "CNPJ" integer NOT NULL,
+    "CNPJ" bigint NOT NULL,
     "RAZAO_SOCIAL_PJ" character varying(100) COLLATE pg_catalog."default" NOT NULL,
     "DT_CRIA_PJ" date NOT NULL,
     CONSTRAINT "PESSOA_J_pkey" PRIMARY KEY ("COD_PROP_PJ"),

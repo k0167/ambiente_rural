@@ -16,4 +16,9 @@ class PessoaJ extends Model
         'DT_CRIA_PJ',
     ];
     public $timestamps = false;
+
+    public function proprietario()
+    {
+        return $this->belongsTo(Proprietario::class, 'COD_PROPRIETARIO', 'COD_PROP_PJ');
+    }
 }
