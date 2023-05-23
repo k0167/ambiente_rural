@@ -45,7 +45,7 @@ class ProprietarioController extends Controller
                         'pessoaF.cpf_prop' => 'required|max:11',
                         'pessoaF.nome_pf' => 'required|string',
                         'pessoaF.dt_nasc_pf' => 'required|date',
-                        'pessoaF.rg_pf' => 'required|string',
+                        'pessoaF.rg_pf' => 'required|numeric',
                         'pessoaF.cod_prop_conjuge' => 'nullable',
                     ]);
                 } else {
@@ -73,6 +73,7 @@ class ProprietarioController extends Controller
             'TIPO' => $request->tipo
 
         ]);
+        try{
         if ($request->tipo == 'PF') {
 
             $proprietario->pessoaF()->create([
@@ -89,6 +90,10 @@ class ProprietarioController extends Controller
                 'RAZAO_SOCIAL_PJ' => $request->pessoaJ['razao_social_pj'],
             ]);
         }
+    }catch(\Exception $e){
+        $proprietario->delete();
+        return response()->json(['message' => $e->getMessage()], 400);
+    }
 
         return response()->json(['message' => 'Proprietario criado com sucesso'], 200);
     }
@@ -112,7 +117,7 @@ class ProprietarioController extends Controller
                         'pessoaF.cpf_prop' => 'required|max:11',
                         'pessoaF.nome_pf' => 'required|string',
                         'pessoaF.dt_nasc_pf' => 'required|date',
-                        'pessoaF.rg_pf' => 'required|string',
+                        'pessoaF.rg_pf' => 'required|numeric',
                         'pessoaF.cod_prop_conjuge' => 'nullable',
                     ]);
                 } else {
@@ -140,12 +145,12 @@ class ProprietarioController extends Controller
 
         if ($request->tipo == 'PF') {
             $proprietario->pessoaF()->update([
-                'CPF_PROP' => $request->pessoaF['cpf_prop'],
                 'NOME_PF' => $request->pessoaF['nome_pf'],
                 'DT_NASC_PF' => $request->pessoaF['dt_nasc_pf'],
                 'RG_PF' => $request->pessoaF['rg_pf'],
                 'COD_PROP_CONJUGE' => $request->pessoaF['cod_prop_conjuge'],
             ]);
+
         } else {
             $proprietario->pessoaJ()->update([
                 'CNPJ' => $request->pessoaJ['cnpj'],
@@ -195,20 +200,10 @@ class ProprietarioController extends Controller
 
     }
 
-    public function destroyPJ(Request $request)
+    public function destroyPJ($id)
     {
         try {
-            $request->validate([
-                'cod_prop_pj' => 'required|integer',
-                'cod_prop_pf' => 'required|integer'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
-        }
-
-        try {
-            $donopj = DonoPJ::where('COD_PROP_PJ', $request->cod_prop_pj)
-                ->where('COD_PROP_PF', $request->cod_prop_pf)->first();
+            $donopj = DonoPJ::find($id);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Dono nao encontrada'], 404);
         }

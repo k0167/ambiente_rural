@@ -159,7 +159,6 @@ export default {
                     fone3: this.form.fone3,
                     tipo: this.form.tipo,
                     pessoaF: {
-                        cpf_prop: this.form.pessoaF.cpf_prop,
                         nome_pf: this.form.pessoaF.nome_pf,
                         dt_nasc_pf: this.form.pessoaF.dt_nasc_pf,
                         rg_pf: this.form.pessoaF.rg_pf,
@@ -237,7 +236,7 @@ export default {
                 if (this.donopj == '') {
                     return;
                 }
-                axios.get(route('proprietarioPJ.store'), {
+                axios.put(route('proprietarioPJ.store'), {
                     cod_prop_pj: this.form.cod_proprietario,
                     cod_prop_pf: this.donopj
                 })
@@ -256,10 +255,7 @@ export default {
             }
 
         }, remDono(item) {
-            axios.get(route('proprietarioPJ.store'), {
-                cod_prop_pj: item.COD_PROP_PJ,
-                cod_prop_pf: this.COD_PROP_PF
-            })
+            axios.post(route('proprietarioPJ.destroy',item.COD_DONO_PJ))
                 .then(response => {
                     this.message = response.data.message;
                     this.getDono();
@@ -270,7 +266,11 @@ export default {
                     this.message = error.response.data.message;
                     this.closeModal();
                 });
-        }
+        },
+        decodeDono(item) {
+            //find and return cod_prop_pf from item in itens array
+            return this.itens.find(i => i.COD_PROPRIETARIO == item.COD_PROP_PF).NOME_PROPRIETARIO
+        },
 
     }
 }
@@ -346,7 +346,7 @@ export default {
                                                 <div>
                                                     <InputLabel for="nome" value="CPF" />
 
-                                                    <TextInput id="nome" type="text" class="mt-1 block w-full"
+                                                    <TextInput :disabled="editing" id="nome" type="text" class="mt-1 block w-full"
                                                         v-model="form.pessoaF.cpf_prop" required autofocus
                                                         autocomplete="off" />
                                                 </div>
@@ -401,7 +401,7 @@ export default {
                                                         v-model="form.pessoaJ.dt_cria_pj" autocomplete="off" />
                                                 </div>
 
-                                                <div class="pt-4">
+                                                <div v-if="editing" class="pt-4">
                                                     <div class="flex flex-wrap">
                                                         <div @click="addDono()"
                                                             class="h-10 w-10 flex justify-center items-center bg-red-800  border border-gray-200 rounded-lg shadow cursor-pointer">
@@ -444,9 +444,9 @@ export default {
                                                             </thead>
                                                             <tbody>
                                                                 <tr v-for="(item,key) in donos" :key="key" :class="stripped()" class="text-center text-md">
-                                                                    <td>{{item.COD_PROP_PF}}</td>
+                                                                    <td>{{decodeDono(item)}}</td>
                                                                     <td class="justify-center flex flex-nowrap">
-                                                                        <svg @click="destroy(item)"
+                                                                        <svg @click="remDono(item)"
                                                                             xmlns="http://www.w3.org/2000/svg" fill="none"
                                                                             viewBox="0 0 24 24" stroke-width="1.5"
                                                                             stroke="currentColor"
