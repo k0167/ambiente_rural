@@ -7,6 +7,8 @@ use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\MunicipioController;
 use App\Http\Controllers\ProducaoController;
 use App\Http\Controllers\ProprietarioController;
+use App\Http\Controllers\ProprietarioPropriedadeController;
+
 
 
 /*
@@ -54,6 +56,10 @@ Route::get('/proprietarios/PJ/{id}', [ProprietarioController::class, 'getProprie
 Route::put('/proprietario/PJ', [ProprietarioController::class, 'storePJ'])->name('proprietarioPJ.store');
 Route::post('/proprietario/PJ/{id}', [ProprietarioController::class, 'destroyPJ'])->name('proprietarioPJ.destroy');
 
+Route::get('/prop-propriedades/{id}', [ProprietarioPropriedadeController::class, 'getPropPropriedades'])->name('prop-propriedades.get');
+Route::put('/prop-propriedade', [ProprietarioPropriedadeController::class, 'store'])->name('prop-propriedade.store');
+Route::post('/prop-propriedade/{id}', [ProprietarioPropriedadeController::class, 'destroy'])->name('prop-propriedade.destroy');
+Route::post('/prop-propriedade', [ProprietarioPropriedadeController::class, 'update'])->name('prop-propriedade.update');
 
 
 

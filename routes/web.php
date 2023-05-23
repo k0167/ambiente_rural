@@ -6,6 +6,7 @@ use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\MunicipioController;
 use App\Http\Controllers\ProducaoController;
 use App\Http\Controllers\ProprietarioController;
+use App\Http\Controllers\ProprietarioPropriedadeController;
 
 
 use Illuminate\Foundation\Application;
@@ -46,6 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/municipio', [MunicipioController::class, 'index'])->name('municipio');
     Route::get('/producao/{propriedade}', [ProducaoController::class, 'index'])->name('producao');
     Route::get('/proprietario', [ProprietarioController::class, 'index'])->name('proprietario');
+    Route::get('/prop-propriedade/{id}', [ProprietarioPropriedadeController::class, 'index'])->name('prop-propriedade');
 
 
 

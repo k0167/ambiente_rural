@@ -270,7 +270,10 @@ export default {
         decodeDono(item) {
             //find and return cod_prop_pf from item in itens array
             return this.itens.find(i => i.COD_PROPRIETARIO == item.COD_PROP_PF).NOME_PROPRIETARIO
+        },laVaiEle(prop) {
+            this.$inertia.get(route('prop-propriedade',prop))
         },
+
 
     }
 }
@@ -512,7 +515,7 @@ export default {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr :class="stripped()" class="text-center text-lg" v-for="item in itens" :key="item.COD_PRODUCAO">
+                    <tr @dblclick="laVaiEle(item.COD_PROPRIETARIO)" :class="stripped()" class="text-center text-lg" v-for="item in itens" :key="item.COD_PRODUCAO">
                         <td>{{ item.COD_PROPRIETARIO }}</td>
                         <td>{{ item.NOME_PROPRIETARIO }}</td>
                         <td>{{ item.FONE1 }}</td>
