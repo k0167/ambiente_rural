@@ -42,7 +42,14 @@ CREATE TABLE IF NOT EXISTS public."PROPRIEDADE"
     "NOME_PROPRIEDADE" character varying(100) COLLATE pg_catalog."default",
     "AREA" numeric(8,3),
     "DISTANCIA_DO_MUNIC" numeric(8,3),
-    "VALOR_AQUISICAO" numeric(12,2)
+    "VALOR_AQUISICAO" numeric(12,2),
+	"COD_MUN" integer NOT NULL,
+	CONSTRAINT "MUNICIPIO_FK" FOREIGN KEY ("COD_MUN")
+        REFERENCES public."MUNICIPIO" ("COD_MUN") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+
 );
 
 -- Table: public.PROPRIETARIO

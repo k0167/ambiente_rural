@@ -26,12 +26,14 @@ export default {
                 nome_propriedade: '',
                 area: '',
                 distancia_do_munic: '',
-                valor_aquisicao: ''
+                valor_aquisicao: '',
+                cod_mun: ''
             },
             editing: false,
             message: '',
             isOpen: false,
             propriedades: [],
+            municipios: [],
         }
     },
     mounted() {
@@ -41,7 +43,9 @@ export default {
         getProp() {
             axios.get(route('propriedades.get'))
                 .then(response => {
-                    this.propriedades = response.data;
+                    this.propriedades = response.data.propriedades;
+                    this.municipios = response.data.municipios;
+
                 })
                 .catch(error => {
                     this.message = error.response.data.message; // Handle any errors that occurred during the request
@@ -67,6 +71,7 @@ export default {
                     area: this.form.area,
                     distancia_do_munic: this.form.distancia_do_munic,
                     valor_aquisicao: this.form.valor_aquisicao,
+                    cod_mun: this.form.cod_mun,
                 }
             )
                 .then(response => {
@@ -88,6 +93,7 @@ export default {
             this.form.area = item.AREA;
             this.form.distancia_do_munic = item.DISTANCIA_DO_MUNIC;
             this.form.valor_aquisicao = item.VALOR_AQUISICAO;
+            this.form.cod_mun = item.COD_MUN;
             this.editing = true;
             this.openModal();
         },
@@ -116,6 +122,7 @@ export default {
                     area: this.form.area,
                     distancia_do_munic: this.form.distancia_do_munic,
                     valor_aquisicao: this.form.valor_aquisicao,
+                    cod_mun: this.form.cod_mun,
                 }
             )
                 .then(response => {
@@ -136,9 +143,13 @@ export default {
             this.form.area = '';
             this.form.distancia_do_munic = '';
             this.form.valor_aquisicao = '';
+            this.form.cod_mun = '';
         },
         laVaiEle(prop) {
             this.$inertia.get(route('producao',prop))
+        }, getMun(cod_mun) {
+            const mun = this.municipios.find(p => p.COD_MUN === cod_mun);
+            return mun ? mun.NOME_MUN : '';
         },
 
     }
@@ -197,6 +208,16 @@ export default {
 
                                         </div>
 
+                                        <div>
+                                            <InputLabel for="nome" value="Municipio" />
+                                            <select class="mt-1 block w-full" name="nome" v-model="form.cod_mun">
+                                                <option v-for="item in municipios" :value="item.COD_MUN">
+                                                    {{ item.NOME_MUN }}
+                                                </option>
+                                            </select>
+
+                                        </div>
+
                                         <div class="flex items-center justify-end mt-4">
                                             <PrimaryButton class="ml-4" :class="{ 'opacity-25': form.processing }"
                                                 :disabled="form.processing">
@@ -234,7 +255,7 @@ export default {
 
             <div v-for="prop in propriedades" :key="prop.COD_PROPRIEDADE">
                 <div @dblclick="laVaiEle(prop.COD_PROPRIEDADE)" width="540px"
-                    class="h-36 overflow-hidden cursor-pointer px-9 py-6 bg-white m-2 border border-gray-200 rounded-lg shadow ">
+                    class="h-40 overflow-hidden cursor-pointer px-9 py-6 bg-white m-2 border border-gray-200 rounded-lg shadow ">
                     <div class="container">
 
                         <div class="text-xl m-1 text-red-800 row overflow-hidden">
@@ -248,6 +269,9 @@ export default {
 
                         <div class="row ">
                             Area: {{ prop.AREA }} Hec<sup>2</sup>
+                        </div>
+                        <div class="row ">
+                            Municipio: {{ getMun(prop.COD_MUN) }}
                         </div>
 
                         <div class="row flex flex-nowrap justify-end">

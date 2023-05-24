@@ -15,4 +15,9 @@ class Municipio extends Model
         'UF_MUN'
     ];
     public $timestamps = false;
+
+    public function propriedades()
+    {
+        return $this->hasMany(Propriedade::class, 'COD_MUN', 'COD_MUN');
+    }
 }

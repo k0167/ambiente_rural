@@ -91,6 +91,10 @@ class MunicipioController extends Controller
             return response()->json(['message' => 'Municipio nao encontrada'], 404);
         }
 
+        if ($municipio->propriedades()->exists()) {
+            return response()->json(['message' => 'Municipio nao pode ser deletado pois possui Propriedades vinculadas'], 400);
+        }
+
         $municipio->delete();
 
         return response()->json([

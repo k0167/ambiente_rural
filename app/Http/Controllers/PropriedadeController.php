@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Municipio;
 use App\Models\Propriedade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -20,7 +21,11 @@ class PropriedadeController extends Controller
 
     public function getPropriedades()
     {
-        return Propriedade::all();
+        $propriedade = Propriedade::all();
+        return response()->json([
+            'propriedades' => $propriedade,
+            'municipios' => Municipio::all()
+        ], 200);
     }
 
     /**
@@ -34,6 +39,7 @@ class PropriedadeController extends Controller
                 'area' => 'required|max:8',
                 'distancia_do_munic' => 'required|max:8',
                 'valor_aquisicao' => 'required|max:12',
+                'cod_mun' => 'required',
             ]);
         } catch (\Exception $e) {
 
@@ -45,6 +51,7 @@ class PropriedadeController extends Controller
             'AREA' => $request->area,
             'DISTANCIA_DO_MUNIC' => $request->distancia_do_munic,
             'VALOR_AQUISICAO' => $request->valor_aquisicao,
+            'COD_MUN' => $request->cod_mun,
         ]);
     }
 
@@ -60,6 +67,7 @@ class PropriedadeController extends Controller
                 'area' => 'nullable|max:9',
                 'distancia_do_munic' => 'nullable|max:9',
                 'valor_aquisicao' => 'nullable|max:13',
+                'cod_mun' => 'required',
             ]);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 400);
@@ -84,6 +92,10 @@ class PropriedadeController extends Controller
             $propriedade->VALOR_AQUISICAO = $request->valor_aquisicao;
         }
 
+        if ($request->cod_mun) {
+            $propriedade->COD_MUN = $request->cod_mun;
+        }
+
         $propriedade->save();
 
         return response()->json(['message' => 'Propriedade Atualizada com sucesso'], 200);
@@ -100,8 +112,7 @@ class PropriedadeController extends Controller
             return response()->json(['message' => 'Propriedade nao encontrada'], 404);
         }
 
-        if($propriedade->producoes()->exists())
-        {
+        if ($propriedade->producoes()->exists()) {
             return response()->json(['message' => 'Propriedade nao pode ser deletada pois possui producoes'], 400);
         }
 
@@ -110,29 +121,5 @@ class PropriedadeController extends Controller
         return response()->json([
             'message' => 'Propriedade deletada com sucesso',
         ], 200);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Propriedade $propriedade)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Propriedade $propriedade)
-    {
-
-        //
     }
 }
