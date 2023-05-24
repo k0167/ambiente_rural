@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Municipio;
 use App\Models\Propriedade;
+use App\Models\Proprietario;
+use App\Models\ProprietarioPropriedade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -114,6 +116,10 @@ class PropriedadeController extends Controller
 
         if ($propriedade->producoes()->exists()) {
             return response()->json(['message' => 'Propriedade nao pode ser deletada pois possui producoes'], 400);
+        }
+
+        if (ProprietarioPropriedade::where('COD_PROPRIED', $propriedade->COD_PROPRIEDADE)->count() > 0) {
+            return response()->json(['message' => 'Propriedade nao pode ser deletado pois possui Donos vinculados'], 400);
         }
 
         $propriedade->delete();

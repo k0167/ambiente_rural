@@ -182,8 +182,14 @@ class ProprietarioController extends Controller
         }
 
         if ($proprietario->pessoaF) {
+            if (DonoPJ::where('COD_PROP_PF', $proprietario->COD_PROPRIETARIO)->count() > 0) {
+                return response()->json(['message' => 'Proprietario nao pode ser deletado pois possui Empresas vinculadas'], 400);
+            }
             $proprietario->pessoaF->delete();
         } else {
+            if (DonoPJ::where('COD_PROP_PJ', $proprietario->COD_PROPRIETARIO)->count() > 0) {
+                return response()->json(['message' => 'Proprietario nao pode ser deletado pois possui Donos vinculados'], 400);
+            }
             $proprietario->pessoaJ->delete();
         }
 
