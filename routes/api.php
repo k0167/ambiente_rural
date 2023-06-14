@@ -8,6 +8,7 @@ use App\Http\Controllers\MunicipioController;
 use App\Http\Controllers\ProducaoController;
 use App\Http\Controllers\ProprietarioController;
 use App\Http\Controllers\ProprietarioPropriedadeController;
+use App\Http\Controllers\DashboardController;
 
 
 
@@ -61,5 +62,6 @@ Route::put('/prop-propriedade', [ProprietarioPropriedadeController::class, 'stor
 Route::post('/prop-propriedade/{id}', [ProprietarioPropriedadeController::class, 'destroy'])->name('prop-propriedade.destroy');
 Route::post('/prop-propriedade', [ProprietarioPropriedadeController::class, 'update'])->name('prop-propriedade.update');
 
+Route::get('/dashboard/anual', [DashboardController::class, 'anual'])->name('dashboard.anual');
 
 
