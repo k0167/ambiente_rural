@@ -13,25 +13,30 @@ use App\Models\ProprietarioPropriedade;
 
 class DashboardController extends Controller
 {
+
+    public function dashboard()
+    {
+        return response()->json(json_encode(array(
+            'anual' => $this->anual(),
+            'juridico' => $this->juridica(),
+            'milho' => $this->milho(),
+        )), 200);
+    }
     //Consulta questão 1
     public function anual()
     {
-        return $this->producoes(2022,null);
+        return $this->producoes(2023, null);
     }
 
     //função para questão 1 e 3, realiza a consulta das produções de uma propriedade ou de todas as propriedades em um ano
-    public function producoes($ano,$prop)
+    public function producoes($ano, $prop)
     {
         try {
-            if($prop != null){
-                $props = Propriedade::with('producoes.produto')->where('COD_PROPRIEDADE',$prop)->get();
-
-            }else{
+            if ($prop != null) {
+                $props = Propriedade::with('producoes.produto')->where('COD_PROPRIEDADE', $prop)->get();
+            } else {
                 $props = Propriedade::with('producoes.produto')->get();
-
             }
-
-
         } catch (\Throwable $th) {
             dd($th); //err handler
         }
@@ -117,9 +122,9 @@ class DashboardController extends Controller
                     $aux[] = array('nome' => $value2->pessoaF->NOME_PF, 'cpf' => $value2->pessoaF->CPF_PROP);
                 }
                 //busca as produções da propriedade
-                $colheita = $this->producoes(2022,$value->COD_PROPRIEDADE);
+                $colheita = $this->producoes(2022, $value->COD_PROPRIEDADE);
                 //testa se existem produções para 2022 naquela propriedade
-                if(isset($colheita[0]['colheita'][6])){
+                if (isset($colheita[0]['colheita'][6])) {
                     //array de retorno
                     $ret[] = array(
                         "nome_prop" => $value->NOME_PROPRIEDADE,
@@ -129,5 +134,6 @@ class DashboardController extends Controller
                 }
             }
         }
+        return $ret;
     }
 }

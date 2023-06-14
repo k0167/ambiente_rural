@@ -66,6 +66,7 @@ Route::post('/prop-propriedade', [ProprietarioPropriedadeController::class, 'upd
 Route::get('/dashboard/anual', [DashboardController::class, 'anual'])->name('dashboard.anual');
 Route::get('/dashboard/juridica', [DashboardController::class, 'juridica'])->name('dashboard.juridica');
 Route::get('/dashboard/milho', [DashboardController::class, 'milho'])->name('dashboard.milho');
+Route::get('/dashboard/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard.dashboard');
 
 
 
