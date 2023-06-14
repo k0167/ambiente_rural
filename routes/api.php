@@ -62,6 +62,10 @@ Route::put('/prop-propriedade', [ProprietarioPropriedadeController::class, 'stor
 Route::post('/prop-propriedade/{id}', [ProprietarioPropriedadeController::class, 'destroy'])->name('prop-propriedade.destroy');
 Route::post('/prop-propriedade', [ProprietarioPropriedadeController::class, 'update'])->name('prop-propriedade.update');
 
+
 Route::get('/dashboard/anual', [DashboardController::class, 'anual'])->name('dashboard.anual');
+Route::get('/dashboard/juridica', [DashboardController::class, 'juridica'])->name('dashboard.juridica');
+Route::get('/dashboard/milho', [DashboardController::class, 'milho'])->name('dashboard.milho');
+
 
 
